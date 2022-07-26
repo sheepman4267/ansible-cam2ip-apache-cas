@@ -1,0 +1,41 @@
+- name: Ensure apache is installed
+  become: yes
+  apt:
+    name: apache2
+    state: latest
+
+- name: Ensure pip is installed
+  become: yes
+  apt:
+    name: python3-pip
+    state: latest
+
+- name: Ensure libapache2-mod-auth-cas is installed
+  become: yes
+  apt:
+    name: libapache2-mod-auth-cas
+    state: latest
+
+- name: Ensure Docker SDK for Python is installed
+  pip:
+    name: docker
+    state: present
+
+- name: Enable Apache CAS Auth module
+  community.general.apache2_module:
+    state: present
+    name: auth_cas
+  
+- name: Pull cam2ip docker image
+  community.docker.docker_image:
+    name: genbrain/cam2ip
+    source: pull
+
+- name: Create cam2ip docker container
+  community.docker.docker_container:
+    name: cam2ip
+    image: genbrain/cam2ip
+    ports:
+      - 56000:56000"
+    devices:
+      - "/dev/video0:/dev/video0"
